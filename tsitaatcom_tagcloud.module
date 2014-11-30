@@ -41,7 +41,7 @@ function tsitaatcom_tagcloud_get_cloud() {
 
   foreach ($tags as $key => $temp_tag) {
     $tag = new TagadelicTag($key, $key, $temp_tag[0]);
-    $tag->set_link($temp_tag[1]);
+    $tag->set_link($base_url . $temp_tag[1]);
 
     $cloud->add_tag($tag);
   }
