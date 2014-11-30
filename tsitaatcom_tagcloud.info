@@ -2,3 +2,4 @@ name = Tsitaat.com TagCloud
 description = ""
 core = 7.x
 package = Tsitaat.com
+dependencies[] = tagadelic
