@@ -1,0 +1,100 @@
+<?php
+
+/**
+ * @file
+ * Main module file for TsitaatCom TagCloud.
+ */
+
+/**
+ * Draw tagcloud.
+ *
+ * Currently statistics are statical and taken from Google Analytics between
+ * Oct 30, 2013 - Nov 29, 2014
+ * https://www.google.com/analytics/web/?hl=en#report/content-pages/a4321409w8322148p8665359/%3F_u.date00%3D20131030%26_u.date01%3D20141129%26explorer-table.plotKeys%3D[]%26_r.drilldown%3Danalytics.pagePath%3A%2Ftsitaadid%2Fteemad%2Felu/
+ */
+function tsitaatcom_tagcloud_get_cloud() {
+  global $base_url;
+  $out = '';
+
+  drupal_add_css(drupal_get_path('module', 'tsitaatcom_tagcloud') . '/tsitaatcom_tagcloud.css');
+
+  // 'tag' => count, url.
+  $tags = array(
+    'A. H. Tammsaare' => array(3695, '/tsitaadid/autorid/a._h._tammsaare'),
+    // 'aeg'          => array(3624, '/tsitaadid/teemad/aeg'),
+    'Antoine de Saint-Exupéry'     => array(2991, '/tsitaadid/autorid/antoine_de_saint-exupéry'),
+    'armastus'     => array(18718, '/tsitaadid/teemad/armastus'),
+    'elu'          => array(21665, '/tsitaadid/teemad/elu'),
+    'inimene'      => array(4953, '/tsitaadid/teemad/inimene'),
+    'laps'         => array(4637, '/tsitaadid/teemad/laps'),
+    'Lennart Meri' => array(4794, '/tsitaadid/autorid/lennart_meri'),
+    'naeratus'     => array(3410, '/tsitaadid/teemad/3410'),
+    // 'naine'        => array(2953, '/tsitaadid/teemad/naine'),
+    'sõber'        => array(4773, '/tsitaadid/teemad/sõber'),
+    'sõprus'       => array(8905, '/tsitaadid/teemad/sõprus'),
+    'töö'          => array(4637, '/tsitaadid/teemad/töö'),
+    'õnn'          => array(9146, '/tsitaadid/teemad/armastus'),
+    'õppimine'     => array(5178, '/tsitaadid/teemad/õppimine'),
+  );
+
+  $cloud = new TagadelicCloud('tagadalic_taxonomy');
+
+  foreach ($tags as $key => $temp_tag) {
+    $tag = new TagadelicTag($key, $key, $temp_tag[0]);
+    $tag->set_link($temp_tag[1]);
+
+    $cloud->add_tag($tag);
+  }
+
+  return theme('tsitaatcom_tagcloud', array('tags' => $cloud->get_tags()));
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function tsitaatcom_tagcloud_block_info() {
+  $blocks = array();
+
+  $blocks['tsitaatcom_tagcloud_block_delta'] = array(
+    'info' => t('Tsitaatcom TagCloud'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function tsitaatcom_tagcloud_block_view($delta = '') {
+  if (function_exists($delta . '_view')) {
+    return call_user_func($delta . '_view');
+  }
+}
+
+/**
+ * Block code to view tsitaatcom_tagcloud_block_delta.
+ */
+function tsitaatcom_tagcloud_block_delta_view() {
+  $block = array('subject' => '', 'content' => '');
+
+  $block['content'] = tsitaatcom_tagcloud_get_cloud();
+
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function tsitaatcom_tagcloud_theme($existing, $type, $theme, $path) {
+  return array(
+    'tsitaatcom_tagcloud' => array(
+      'variables' => array(
+        'tags' => array(),
+        'name' => '',
+      ),
+      'path' => "{$path}/theme",
+      'template' => 'tsitaatcom_tagcloud',
+    ),
+  );
+}
